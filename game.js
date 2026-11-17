@@ -47,7 +47,6 @@ const skins = [
   { name: "유니콘", emoji: "🦄", price: 200, color: "#e9b5ef", type: "unicorn" }
 ];
 
-
 let ownedSkins = JSON.parse(
   localStorage.getItem("ownedSkins") || "[0]"
 );
@@ -60,6 +59,7 @@ coinsText.textContent = coins;
 bestText.textContent = best;
 
 // 스킨 적용
+
 function animalSVG(skin) {
   const c = skin.color;
   const type = skin.type;
@@ -177,6 +177,35 @@ function applySkin() {
   player.innerHTML = animalSVG(skins[selectedSkin]);
 }
 
+function updateWorld() {
+  const worlds = [
+    { score: 0, className: "world-meadow", name: "🌼 초원 세계" },
+    { score: 10, className: "world-candy", name: "🍭 사탕 세계" },
+    { score: 20, className: "world-winter", name: "❄️ 눈꽃 세계" },
+    { score: 30, className: "world-night", name: "🌙 밤하늘 세계" }
+  ];
+
+  const world = [...worlds]
+    .reverse()
+    .find(item => score >= item.score);
+
+  game.classList.remove(
+    "world-meadow",
+    "world-candy",
+    "world-winter",
+    "world-night"
+  );
+
+  game.classList.add(world.className);
+
+  const label = document.getElementById("worldLabel");
+
+  if (label) {
+    label.textContent = world.name;
+  }
+}
+
+
 // 상점 만들기
 function renderShop() {
   shop.innerHTML = "";
@@ -261,6 +290,8 @@ function startGame() {
   entities = [];
 
   gameOver = false;
+  spawnTimer = 0;
+  coinTimer = 0;
   score = 0;
   playerY = 0;
   velocity = 0;
@@ -272,8 +303,16 @@ function startGame() {
 
   player.style.bottom = groundHeight + "px";
 
+  player.classList.remove(
+    "is-jumping",
+    "is-happy",
+    "is-sad"
+  );
+
   scoreText.textContent = "0";
   message.textContent = "";
+
+  updateWorld();
 
   lastTime = performance.now();
 
@@ -281,6 +320,7 @@ function startGame() {
 }
 
 // 점프
+
 function jump() {
   if (gameOver) {
     startGame();
@@ -290,8 +330,11 @@ function jump() {
   if (!jumping) {
     jumping = true;
     velocity = jumpPower;
+
+    player.classList.add("is-jumping");
   }
 }
+
 
 // 장애물 생성
 function createObstacle() {
@@ -344,6 +387,7 @@ function createPit() {
 }
 
 // 코인 생성
+
 function createCoin() {
   const element = document.createElement("div");
   element.className = "coin";
@@ -365,13 +409,18 @@ function createCoin() {
   });
 }
 
-// 코인 획득
 function collectCoin(entity) {
   coins++;
 
   coinsText.textContent = coins;
 
   localStorage.setItem("jumpCoins", coins);
+
+  player.classList.add("is-happy");
+
+  setTimeout(() => {
+    player.classList.remove("is-happy");
+  }, 700);
 
   entity.element.remove();
 
@@ -393,18 +442,19 @@ function checkCollision() {
     const o = entity.element.getBoundingClientRect();
 
     if (entity.type === "coin") {
-      const hit =
-        playerBox.right > o.left &&
-        playerBox.left < o.right &&
-        playerBox.bottom > o.top &&
-        playerBox.top < o.bottom;
+    const hit =
+      playerBox.right > o.left &&
+      playerBox.left < o.right &&
+      playerBox.bottom > o.top &&
+      playerBox.top < o.bottom;
 
-      if (hit) {
-        collectCoin(entity);
-      }
-
-      continue;
+    if (hit) {
+      collectCoin(entity);
     }
+
+  // 코인은 장애물이 아니므로 충돌로 게임을 멈추지 않음
+    continue;
+  }
 
     if (entity.type === "pit") {
       const overlaps =
@@ -434,14 +484,11 @@ function checkCollision() {
 }
 
 // 게임 업데이트
+
 function update(time) {
   if (gameOver) return;
 
-  const dt = Math.min(
-    (time - lastTime) / 16.67,
-    2
-  );
-
+  const dt = Math.min((time - lastTime) / 16.67, 2);
   lastTime = time;
 
   // 점프 물리
@@ -449,10 +496,11 @@ function update(time) {
     playerY += velocity * dt;
     velocity -= gravity * dt;
 
-    if (playerY <= 0) {
+    if (playerY <= 0 && velocity < 0) {
       playerY = 0;
       velocity = 0;
       jumping = false;
+      player.classList.remove("is-jumping");
     }
   }
 
@@ -463,10 +511,7 @@ function update(time) {
   spawnTimer += dt;
   coinTimer += dt;
 
-  const spawnInterval = Math.max(
-    65,
-    105 - score * 1.5
-  );
+  const spawnInterval = Math.max(65, 105 - score * 1.5);
 
   if (spawnTimer >= spawnInterval) {
     spawnTimer = 0;
@@ -487,20 +532,14 @@ function update(time) {
   // 오브젝트 이동
   for (const entity of [...entities]) {
     entity.x -= speed * dt;
+    entity.element.style.left = entity.x + "px";
 
-    entity.element.style.left =
-      entity.x + "px";
-
-    // 화면 밖으로 나간 장애물
-    if (
-      entity.x + entity.width < 0 &&
-      entity.type !== "coin"
-    ) {
+    if (entity.x + entity.width < 0 && entity.type !== "coin") {
       if (entity.type === "obstacle") {
         score++;
         scoreText.textContent = score;
+        updateWorld();
 
-        // 장애물 통과 보너스 코인
         if (score % 3 === 0) {
           coins++;
           coinsText.textContent = coins;
@@ -512,17 +551,12 @@ function update(time) {
       entities = entities.filter(item => item !== entity);
     }
 
-    // 화면 밖 코인 제거
-    if (
-      entity.type === "coin" &&
-      entity.x < -40
-    ) {
+    if (entity.type === "coin" && entity.x < -40) {
       entity.element.remove();
       entities = entities.filter(item => item !== entity);
     }
   }
 
-  // 난이도 증가
   speed = Math.min(5 + score * 0.12, 11);
 
   checkCollision();
@@ -533,13 +567,21 @@ function update(time) {
 }
 
 // 게임 종료
+
 function endGame() {
   gameOver = true;
 
   cancelAnimationFrame(animationId);
 
+  player.classList.remove(
+    "is-jumping",
+    "is-happy"
+  );
+
+  player.classList.add("is-sad");
+
   message.textContent =
-    "💥 게임 오버! 다시 도전해 봐!";
+    "💔 게임 오버! 다시 도전해 봐!";
 
   if (score > best) {
     best = score;
@@ -551,6 +593,7 @@ function endGame() {
   localStorage.setItem("jumpCoins", coins);
   coinsText.textContent = coins;
 }
+
 
 // 다시 시작
 function restart() {
