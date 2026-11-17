@@ -263,3 +263,524 @@ button:hover {
   }
 }
 
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #dff3ff, #c9f5d5);
+  font-family: Arial, sans-serif;
+  padding: 20px 0;
+}
+
+.game-container {
+  width: 92%;
+  max-width: 750px;
+  text-align: center;
+  background: white;
+  padding: 25px;
+  border-radius: 22px;
+  box-shadow: 0 8px 25px #0002;
+}
+
+h1 {
+  color: #345;
+}
+
+h2 {
+  margin-top: 35px;
+  color: #345;
+}
+
+.currency {
+  display: inline-block;
+  background: #fff2b8;
+  color: #9a6b00;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin: 10px;
+  font-size: 18px;
+}
+
+#game {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(#aee4ff, #f5fcff);
+  border: 3px solid #567;
+  border-radius: 12px;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+#player {
+  position: absolute;
+  left: 45px;
+  bottom: 25px;
+  width: 90px;
+  height: 90px;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+#player svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: animalRun 0.35s infinite alternate;
+}
+
+@keyframes animalRun {
+  from { transform: translateY(0) rotate(-2deg); }
+  to { transform: translateY(-2px) rotate(2deg); }
+}
+
+#ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 25px;
+  background: #69bd58;
+  z-index: 2;
+}
+
+#gameObjects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.obstacle {
+  position: absolute;
+  bottom: 25px;
+  font-size: 38px;
+  line-height: 45px;
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  z-index: 3;
+}
+
+.pit {
+  position: absolute;
+  bottom: 0;
+  height: 25px;
+  background: #49372d;
+  border-left: 3px solid #69bd58;
+  border-right: 3px solid #69bd58;
+  z-index: 3;
+}
+
+.coin {
+  position: absolute;
+  font-size: 27px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  z-index: 4;
+}
+
+#message {
+  position: absolute;
+  width: 100%;
+  top: 35%;
+  left: 0;
+  font-size: 19px;
+  font-weight: bold;
+  color: #345;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.info {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+button {
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #2675b9;
+  transform: translateY(-2px);
+}
+
+.shop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.skin {
+  background: #f0f7ff;
+  border: 2px solid #d4e6fa;
+  border-radius: 14px;
+  padding: 15px 5px;
+}
+
+.skin .emoji {
+  font-size: 38px;
+  margin-bottom: 8px;
+}
+
+.skin .name {
+  font-weight: bold;
+  margin: 5px;
+}
+
+.skin .price {
+  color: #b78300;
+  margin: 7px;
+  font-size: 14px;
+}
+
+.skin button {
+  width: 95%;
+  padding: 9px 4px;
+  font-size: 13px;
+}
+
+.skin button:disabled {
+  background: #aaa;
+  cursor: default;
+  transform: none;
+}
+
+.skin.selected {
+  border-color: #36b879;
+  background: #e5fff0;
+}
+
+.help {
+  margin-top: 25px;
+  color: #777;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+@media (max-width: 500px) {
+  .game-container {
+    padding: 15px;
+  }
+
+  #game {
+    height: 240px;
+  }
+
+  .shop {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info {
+    font-size: 15px;
+  }
+}
+
+.skin {
+  transition: 0.2s;
+  cursor: default;
+}
+
+.skin:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 14px #0002;
+}
+
+.skin .emoji {
+  font-size: 45px;
+  animation: animalBounce 2s infinite ease-in-out;
+}
+
+.skin.selected {
+  border: 3px solid #36b879;
+  background: #e5fff0;
+}
+
+@keyframes animalBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+
+/* 게임 화면 레이어 정리 */
+
+#gameObjects {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+#ground {
+  z-index: 2;
+}
+
+#player {
+  z-index: 5;
+}
+
+#worldLabel {
+  z-index: 6;
+}
+
+#message {
+  z-index: 8;
+}
+
+/* 기본 초원 세계 */
+#game.world-meadow {
+  background: linear-gradient(
+    to bottom,
+    #8ed8ff 0%,
+    #d9f7ff 65%,
+    #b8e99b 100%
+  );
+  transition: background 1s ease;
+}
+
+/* 사탕 세계 */
+#game.world-candy {
+  background: linear-gradient(
+    to bottom,
+    #ffb9dc 0%,
+    #ffd6ed 55%,
+    #b8a5ff 100%
+  );
+}
+
+/* 눈꽃 세계 */
+#game.world-winter {
+  background: linear-gradient(
+    to bottom,
+    #719bdc 0%,
+    #c8e7ff 60%,
+    #f5fbff 100%
+  );
+}
+
+/* 밤하늘 세계 */
+#game.world-night {
+  background: linear-gradient(
+    to bottom,
+    #111b50 0%,
+    #343b83 60%,
+    #7774b5 100%
+  );
+}
+
+/* 세계 전환 애니메이션 */
+#game {
+  transition: background 1s ease;
+}
+
+/* 밤하늘 세계의 바닥 */
+#game.world-night #ground {
+  background: #55518e;
+}
+
+/* 눈꽃 세계의 바닥 */
+#game.world-winter #ground {
+  background: #e9f5ff;
+}
+
+/* 사탕 세계의 바닥 */
+#game.world-candy #ground {
+  background: #ef91c7;
+}
+
+/* 초원 세계의 바닥 */
+#game.world-meadow #ground {
+  background: #69bd58;
+}
+
+/* =========================
+   세계별 움직이는 장식
+========================= */
+
+#game {
+  isolation: isolate;
+}
+
+/* 장식 공통 설정 */
+#game::before,
+#game::after {
+  position: absolute;
+  pointer-events: none;
+  white-space: pre;
+  z-index: 1;
+  user-select: none;
+}
+
+/* 초원 세계 - 움직이는 구름 */
+#game.world-meadow::before {
+  content: "☁️             ☁️          ☁️";
+  top: 35px;
+  left: 0;
+  font-size: 30px;
+  animation: cloudMove 18s linear infinite;
+}
+
+#game.world-meadow::after {
+  content: "🌼     🌷      🌻       🌼";
+  bottom: 25px;
+  left: 0;
+  font-size: 23px;
+  animation: flowerMove 12s linear infinite;
+}
+
+/* 사탕 세계 */
+#game.world-candy::before {
+  content: "🍭       🍬        🍡       🍭";
+  top: 45px;
+  left: 0;
+  font-size: 27px;
+  animation: candyFloat 5s ease-in-out infinite;
+}
+
+#game.world-candy::after {
+  content: "✨       🍬       ✨       🍭";
+  bottom: 35px;
+  left: 0;
+  font-size: 22px;
+  animation: candyMove 12s linear infinite;
+}
+
+/* 눈꽃 세계 */
+#game.world-winter::before {
+  content: "❄️       ❄️       ❄️       ❄️";
+  top: 0;
+  left: 0;
+  font-size: 25px;
+  animation: snowFall 7s linear infinite;
+}
+
+#game.world-winter::after {
+  content: "❄️       ❄️        ❄️";
+  top: 0;
+  left: 35%;
+  font-size: 20px;
+  animation: snowFall 10s linear infinite;
+}
+
+/* 밤하늘 세계 */
+#game.world-night::before {
+  content: "⭐       ✨       ⭐       ✨";
+  top: 30px;
+  left: 0;
+  font-size: 23px;
+  animation: starTwinkle 2s ease-in-out infinite alternate;
+}
+
+#game.world-night::after {
+  content: "🌙       ⭐        ✨";
+  top: 90px;
+  left: 0;
+  font-size: 27px;
+  animation: nightFloat 6s ease-in-out infinite;
+}
+
+/* 애니메이션 */
+
+@keyframes cloudMove {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(750px);
+  }
+}
+
+@keyframes flowerMove {
+  from {
+    transform: translateX(750px);
+  }
+  to {
+    transform: translateX(-300px);
+  }
+}
+
+@keyframes candyFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(18px);
+  }
+}
+
+@keyframes candyMove {
+  from {
+    transform: translateX(700px);
+  }
+  to {
+    transform: translateX(-300px);
+  }
+}
+
+@keyframes snowFall {
+  from {
+    transform: translateY(-40px);
+  }
+  to {
+    transform: translateY(300px);
+  }
+}
+
+@keyframes starTwinkle {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nightFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(20px);
+  }
+}
+
+/* 세계 이름 표시 */
+#worldLabel {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 7;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: #ffffffbb;
+}
+
