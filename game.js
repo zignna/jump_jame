@@ -10,6 +10,159 @@ const message = document.getElementById("message");
 const restartBtn = document.getElementById("restart");
 const shop = document.getElementById("shop");
 
+const backgroundShop = document.getElementById("backgroundShop");
+
+// 배경 목록
+const backgrounds = [
+  {
+    name: "초원",
+    emoji: "🌼",
+    price: 0,
+    className: "world-meadow"
+  },
+  {
+    name: "사탕 나라",
+    emoji: "🍭",
+    price: 50,
+    className: "world-candy"
+  },
+  {
+    name: "눈꽃 마을",
+    emoji: "❄️",
+    price: 100,
+    className: "world-winter"
+  },
+  {
+    name: "별빛 밤하늘",
+    emoji: "🌙",
+    price: 150,
+    className: "world-night"
+  },
+  {
+    name: "바닷속",
+    emoji: "🌊",
+    price: 200,
+    className: "world-ocean"
+  },
+  {
+    name: "요정 왕국",
+    emoji: "🏰",
+    price: 300,
+    className: "world-fairy"
+  }
+];
+
+let ownedBackgrounds = JSON.parse(
+  localStorage.getItem("ownedBackgrounds") || "[0]"
+);
+
+let selectedBackground = Number(
+  localStorage.getItem("selectedBackground") || 0
+);
+
+// 배경 적용
+function applyBackground() {
+  const bg = backgrounds[selectedBackground];
+
+  game.classList.remove(
+    "world-meadow",
+    "world-candy",
+    "world-winter",
+    "world-night",
+    "world-ocean",
+    "world-fairy"
+  );
+
+  game.classList.add(bg.className);
+}
+
+// 배경 상점
+function renderBackgroundShop() {
+  backgroundShop.innerHTML = "";
+
+  backgrounds.forEach((bg, index) => {
+    const card = document.createElement("div");
+    card.className = "skin";
+
+    if (selectedBackground === index) {
+      card.classList.add("selected");
+    }
+
+    const emoji = document.createElement("div");
+    emoji.className = "emoji";
+    emoji.textContent = bg.emoji;
+
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = bg.name;
+
+    const price = document.createElement("div");
+    price.className = "price";
+    price.textContent =
+      bg.price === 0 ? "무료" : "🪙 " + bg.price;
+
+    const button = document.createElement("button");
+
+    if (selectedBackground === index) {
+      button.textContent = "사용 중";
+      button.disabled = true;
+    } else if (ownedBackgrounds.includes(index)) {
+      button.textContent = "장착하기";
+    } else {
+      button.textContent = "구매하기";
+    }
+
+    button.addEventListener("click", () => {
+      if (ownedBackgrounds.includes(index)) {
+        selectedBackground = index;
+
+        localStorage.setItem(
+          "selectedBackground",
+          index
+        );
+
+        applyBackground();
+        renderBackgroundShop();
+        return;
+      }
+
+      if (coins >= bg.price) {
+        coins -= bg.price;
+        ownedBackgrounds.push(index);
+
+        localStorage.setItem("jumpCoins", coins);
+
+        localStorage.setItem(
+          "ownedBackgrounds",
+          JSON.stringify(ownedBackgrounds)
+        );
+
+        selectedBackground = index;
+
+        localStorage.setItem(
+          "selectedBackground",
+          index
+        );
+
+        coinsText.textContent = coins;
+
+        applyBackground();
+        renderBackgroundShop();
+      } else {
+        alert("코인이 부족해요! 🥺");
+      }
+    });
+
+    card.append(emoji, name, price, button);
+    backgroundShop.appendChild(card);
+  });
+}
+
+// 배경 초기 적용
+applyBackground();
+renderBackgroundShop();
+
+
 let playerY = 0;
 let velocity = 0;
 let jumping = false;
@@ -115,10 +268,16 @@ function animalSVG(skin) {
       tail = `<path d="M26 58 Q4 48 13 31" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`;
       break;
 
+    
+    
     case "penguin":
-      extra = `<ellipse cx="83" cy="49" rx="17" ry="22" fill="white"/>
-      <path d="M98 37 L113 43 L98 48Z" fill="#f5a52b"/>`;
+      extra = `
+       <ellipse cx="47" cy="57" rx="13" ry="16"
+         fill="white"/>
+      `;
       break;
+
+
 
     case "tiger":
       extra = `<path d="M70 42 L77 51 L72 59 M92 42 L86 51 L93 58" stroke="#4a3020" stroke-width="5" fill="none"/>`;
@@ -152,13 +311,72 @@ function animalSVG(skin) {
     <ellipse cx="83" cy="38" rx="20" ry="19" fill="${c}"/>
   `;
 
-  const face = `
+  
+let face = "";
+
+if (type === "monkey") {
+  // 귀여운 원숭이 얼굴
+  face = `
+    <ellipse cx="83" cy="40" rx="17" ry="15"
+      fill="#f4c49a"/>
+
+    <ellipse cx="76" cy="35" rx="3.5" ry="4"
+      fill="#302820"/>
+    <ellipse cx="92" cy="35" rx="3.5" ry="4"
+      fill="#302820"/>
+
+    <circle cx="77" cy="34" r="1.2" fill="white"/>
+    <circle cx="93" cy="34" r="1.2" fill="white"/>
+
+    <ellipse cx="84" cy="44" rx="8" ry="6"
+      fill="#ffe0c4"/>
+
+    <circle cx="84" cy="41" r="2.5"
+      fill="#51352b"/>
+
+    <path d="M79 47 Q84 52 89 47"
+      stroke="#754b3b"
+      stroke-width="1.8"
+      fill="none"
+      stroke-linecap="round"/>
+
+    <circle cx="70" cy="45" r="4"
+      fill="#ff9fae" opacity=".7"/>
+
+    <circle cx="98" cy="45" r="4"
+      fill="#ff9fae" opacity=".7"/>
+  `;
+
+
+
+} else if (type === "penguin") {
+  face = `
+    <ellipse cx="83" cy="37" rx="10" ry="9"
+      fill="white"/>
+
+    <circle cx="79" cy="36" r="2.5" fill="#222"/>
+    <circle cx="87" cy="36" r="2.5" fill="#222"/>
+
+    <path d="M81 41 L85 41 L83 44Z"
+      fill="#ffad36"/>
+
+    <circle cx="75" cy="42" r="2.5"
+      fill="#ff9fae" opacity=".6"/>
+    <circle cx="91" cy="42" r="2.5"
+      fill="#ff9fae" opacity=".6"/>
+  `;
+} else {
+  // 나머지 동물의 기본 얼굴
+  face = `
     <circle cx="91" cy="33" r="3.2" fill="#302820"/>
     <circle cx="92" cy="32" r="1" fill="white"/>
     <ellipse cx="101" cy="43" rx="7" ry="5" fill="${c}"/>
     <circle cx="106" cy="42" r="2.5" fill="#49352f"/>
-    <circle cx="96" cy="48" r="4" fill="#f49ca5" opacity=".65"/>
+    <circle cx="96" cy="48" r="4"
+      fill="#f49ca5" opacity=".65"/>
   `;
+}
+
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg"
@@ -312,7 +530,8 @@ function startGame() {
   scoreText.textContent = "0";
   message.textContent = "";
 
-  updateWorld();
+  
+
 
   lastTime = performance.now();
 
@@ -455,7 +674,7 @@ function checkCollision() {
   // 코인은 장애물이 아니므로 충돌로 게임을 멈추지 않음
     continue;
   }
-
+    
     if (entity.type === "pit") {
       const overlaps =
         p.left + 8 < o.right - 8 &&
@@ -470,6 +689,7 @@ function checkCollision() {
 
       continue;
     }
+
 
 
     const collision =
@@ -540,7 +760,7 @@ function update(time) {
       if (entity.type === "obstacle") {
         score++;
         scoreText.textContent = score;
-        updateWorld();
+        
 
         if (score % 3 === 0) {
           coins++;
