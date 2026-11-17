@@ -706,6 +706,82 @@ button:hover {
   animation: nightFloat 6s ease-in-out infinite;
 }
 
+
+/* 바닷속 세계 */
+#game.world-ocean {
+  background: linear-gradient(
+    to bottom,
+    #62d5ed,
+    #9beeff 55%,
+    #168da9
+  );
+}
+
+#game.world-ocean #ground {
+  background: #e9c58c;
+}
+
+/* 요정 왕국 */
+#game.world-fairy {
+  background: linear-gradient(
+    to bottom,
+    #c9a3ff,
+    #f5c9f5 60%,
+    #a5e6c3
+  );
+}
+
+#game.world-fairy #ground {
+  background: #8bd59e;
+}
+
+/* 새로운 세계의 장식 */
+#game.world-ocean::before {
+  content: "🫧   🐠    🫧    🐟    🫧";
+  position: absolute;
+  top: 35px;
+  left: 0;
+  font-size: 25px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: oceanMove 15s linear infinite;
+  z-index: 1;
+}
+
+#game.world-fairy::before {
+  content: "✨    🦋    ⭐    🦋    ✨";
+  position: absolute;
+  top: 40px;
+  left: 0;
+  font-size: 25px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fairyMove 12s linear infinite;
+  z-index: 1;
+}
+
+@keyframes oceanMove {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes fairyMove {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+/* 배경 상점 카드 */
+#backgroundShop .skin {
+  background: #fff4fb;
+  border-color: #f0d5f0;
+}
+
+#backgroundShop .skin.selected {
+  background: #e5fff0;
+  border-color: #36b879;
+}
+
+
 /* 애니메이션 */
 
 @keyframes cloudMove {
@@ -783,4 +859,3 @@ button:hover {
   border-radius: 20px;
   background: #ffffffbb;
 }
-
