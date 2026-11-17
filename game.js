@@ -458,17 +458,19 @@ function checkCollision() {
 
     if (entity.type === "pit") {
       const overlaps =
-        p.left + 8 < o.right &&
-        p.right - 8 > o.left;
+        p.left + 8 < o.right - 8 &&
+        p.right - 8 > o.left + 8;
 
-      // 구덩이 위에서 땅에 닿으면 게임 오버
-      if (overlaps && playerY < 12) {
+  // 구덩이에 실제로 걸쳐 있고
+  // 캐릭터가 땅에 착지했을 때 게임 오버
+      if (overlaps && playerY <= 2 && !jumping) {
         endGame();
         return;
-      }
+     }
 
       continue;
     }
+
 
     const collision =
       playerBox.right > o.left + 8 &&
