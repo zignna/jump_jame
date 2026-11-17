@@ -1,0 +1,250 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #dff3ff, #c9f5d5);
+  font-family: Arial, sans-serif;
+  padding: 20px 0;
+}
+
+.game-container {
+  width: 92%;
+  max-width: 750px;
+  text-align: center;
+  background: white;
+  padding: 25px;
+  border-radius: 22px;
+  box-shadow: 0 8px 25px #0002;
+}
+
+h1 {
+  color: #345;
+}
+
+h2 {
+  margin-top: 35px;
+  color: #345;
+}
+
+.currency {
+  display: inline-block;
+  background: #fff2b8;
+  color: #9a6b00;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin: 10px;
+  font-size: 18px;
+}
+
+#game {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(#aee4ff, #f5fcff);
+  border: 3px solid #567;
+  border-radius: 12px;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+#player {
+  position: absolute;
+  left: 60px;
+  bottom: 25px;
+  font-size: 42px;
+  z-index: 5;
+  line-height: 1;
+  user-select: none;
+}
+
+#ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 25px;
+  background: #69bd58;
+  z-index: 2;
+}
+
+#gameObjects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.obstacle {
+  position: absolute;
+  bottom: 25px;
+  font-size: 38px;
+  line-height: 45px;
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  z-index: 3;
+}
+
+.pit {
+  position: absolute;
+  bottom: 0;
+  height: 25px;
+  background: #49372d;
+  border-left: 3px solid #69bd58;
+  border-right: 3px solid #69bd58;
+  z-index: 3;
+}
+
+.coin {
+  position: absolute;
+  font-size: 27px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  z-index: 4;
+}
+
+#message {
+  position: absolute;
+  width: 100%;
+  top: 35%;
+  left: 0;
+  font-size: 19px;
+  font-weight: bold;
+  color: #345;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.info {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+button {
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #2675b9;
+  transform: translateY(-2px);
+}
+
+.shop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.skin {
+  background: #f0f7ff;
+  border: 2px solid #d4e6fa;
+  border-radius: 14px;
+  padding: 15px 5px;
+}
+
+.skin .emoji {
+  font-size: 38px;
+  margin-bottom: 8px;
+}
+
+.skin .name {
+  font-weight: bold;
+  margin: 5px;
+}
+
+.skin .price {
+  color: #b78300;
+  margin: 7px;
+  font-size: 14px;
+}
+
+.skin button {
+  width: 95%;
+  padding: 9px 4px;
+  font-size: 13px;
+}
+
+.skin button:disabled {
+  background: #aaa;
+  cursor: default;
+  transform: none;
+}
+
+.skin.selected {
+  border-color: #36b879;
+  background: #e5fff0;
+}
+
+.help {
+  margin-top: 25px;
+  color: #777;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+@media (max-width: 500px) {
+  .game-container {
+    padding: 15px;
+  }
+
+  #game {
+    height: 240px;
+  }
+
+  .shop {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info {
+    font-size: 15px;
+  }
+}
+
+.skin {
+  transition: 0.2s;
+  cursor: default;
+}
+
+.skin:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 14px #0002;
+}
+
+.skin .emoji {
+  font-size: 45px;
+  animation: animalBounce 2s infinite ease-in-out;
+}
+
+.skin.selected {
+  border: 3px solid #36b879;
+  background: #e5fff0;
+}
+
+@keyframes animalBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+

@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>토끼의 코인 모험!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>🐰 토끼의 코인 모험!</h1>
+    <p>점프해서 장애물을 피하고 코인을 모으세요!</p>
+
+    <div class="currency">
+      🪙 보유 코인: <span id="coins">0</span>
+    </div>
+
+    <div id="game">
+      <div id="player">🐰</div>
+      <div id="ground"></div>
+      <div id="gameObjects"></div>
+      <div id="message">화면을 클릭해서 시작!</div>
+    </div>
+
+    <div class="info">
+      <span>점수: <span id="score">0</span></span>
+      <span>최고 점수: <span id="best">0</span></span>
+    </div>
+
+    <button id="restart">🔄 다시 시작</button>
+
+    <h2>🎨 스킨 상점</h2>
+    <p>코인을 모아서 새로운 토끼를 구매하세요!</p>
+
+    <div id="shop" class="shop"></div>
+
+    <p class="help">
+      PC: 스페이스바 / ↑ 키<br>
+      모바일: 화면 터치
+    </p>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
+
