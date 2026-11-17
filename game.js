@@ -180,9 +180,9 @@ function applySkin() {
 function updateWorld() {
   const worlds = [
     { score: 0, className: "world-meadow", name: "🌼 초원 세계" },
-    { score: 10, className: "world-candy", name: "🍭 사탕 세계" },
-    { score: 20, className: "world-winter", name: "❄️ 눈꽃 세계" },
-    { score: 30, className: "world-night", name: "🌙 밤하늘 세계" }
+    { score: 30, className: "world-candy", name: "🍭 사탕 세계" },
+    { score: 50, className: "world-winter", name: "❄️ 눈꽃 세계" },
+    { score: 100, className: "world-night", name: "🌙 밤하늘 세계" }
   ];
 
   const world = [...worlds]
