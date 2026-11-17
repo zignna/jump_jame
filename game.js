@@ -33,18 +33,18 @@ const jumpPower = 13;
 
 
 const skins = [
-  { name: "토끼", emoji: "🐰", price: 0 },
-  { name: "공룡", emoji: "🦖", price: 20 },
-  { name: "기린", emoji: "🦒", price: 20 },
-  { name: "코끼리", emoji: "🐘", price: 30 },
-  { name: "사자", emoji: "🦁", price: 30 },
-  { name: "판다", emoji: "🐼", price: 40 },
-  { name: "고양이", emoji: "🐱", price: 40 },
-  { name: "펭귄", emoji: "🐧", price: 40 },
-  { name: "호랑이", emoji: "🐯", price: 60 },
-  { name: "여우", emoji: "🦊", price: 60 },
-  { name: "원숭이", emoji: "🐵", price: 100 },
-  { name: "유니콘", emoji: "🦄", price: 200 }
+  { name: "토끼", emoji: "🐰", price: 0, color: "#f4d6b9", type: "rabbit" },
+  { name: "공룡", emoji: "🦖", price: 20, color: "#62bd67", type: "dino" },
+  { name: "기린", emoji: "🦒", price: 20, color: "#f3c84b", type: "giraffe" },
+  { name: "코끼리", emoji: "🐘", price: 30, color: "#9caec0", type: "elephant" },
+  { name: "사자", emoji: "🦁", price: 30, color: "#e6a64d", type: "lion" },
+  { name: "판다", emoji: "🐼", price: 40, color: "#eeeeee", type: "panda" },
+  { name: "고양이", emoji: "🐱", price: 40, color: "#f3a77b", type: "cat" },
+  { name: "펭귄", emoji: "🐧", price: 40, color: "#53677d", type: "penguin" },
+  { name: "호랑이", emoji: "🐯", price: 60, color: "#f39b35", type: "tiger" },
+  { name: "여우", emoji: "🦊", price: 60, color: "#e98639", type: "fox" },
+  { name: "원숭이", emoji: "🐵", price: 100, color: "#a96c43", type: "monkey" },
+  { name: "유니콘", emoji: "🦄", price: 200, color: "#e9b5ef", type: "unicorn" }
 ];
 
 
@@ -60,8 +60,121 @@ coinsText.textContent = coins;
 bestText.textContent = best;
 
 // 스킨 적용
+function animalSVG(skin) {
+  const c = skin.color;
+  const type = skin.type;
+
+  let ears = "";
+  let extra = "";
+  let tail = "";
+
+  switch (type) {
+    case "rabbit":
+      ears = `
+        <ellipse cx="73" cy="14" rx="8" ry="20" fill="${c}"/>
+        <ellipse cx="91" cy="14" rx="8" ry="20" fill="${c}"/>
+        <ellipse cx="73" cy="14" rx="3" ry="14" fill="#f5a8b8"/>
+        <ellipse cx="91" cy="14" rx="3" ry="14" fill="#f5a8b8"/>
+      `;
+      tail = `<circle cx="12" cy="60" r="9" fill="white"/>`;
+      break;
+
+    case "dino":
+      ears = `<path d="M67 27 L66 12 L78 23 L83 7 L92 25 L103 16 L101 35Z" fill="#389e54"/>`;
+      tail = `<path d="M30 57 Q9 48 5 30 Q23 39 39 45Z" fill="${c}"/>`;
+      extra = `<path d="M42 42 L50 36 L56 43 L63 37 L69 44" fill="#a4e78c"/>`;
+      break;
+
+    case "giraffe":
+      ears = `<path d="M72 30 L72 5 Q81 -2 88 8 L88 38Z" fill="${c}"/>
+      <circle cx="75" cy="5" r="4" fill="#9d692c"/>
+      <circle cx="88" cy="5" r="4" fill="#9d692c"/>`;
+      extra = `<circle cx="45" cy="48" r="5" fill="#a96b27"/>
+      <circle cx="58" cy="65" r="5" fill="#a96b27"/>`;
+      break;
+
+    case "elephant":
+      ears = `<ellipse cx="66" cy="39" rx="19" ry="23" fill="#8198b2"/>
+      <ellipse cx="66" cy="39" rx="12" ry="16" fill="#e8a7b2"/>`;
+      extra = `<path d="M96 39 Q116 43 107 63 Q104 73 96 65" fill="none" stroke="${c}" stroke-width="11" stroke-linecap="round"/>`;
+      break;
+
+    case "lion":
+      ears = `<circle cx="82" cy="36" r="29" fill="#bd7937"/>
+      <circle cx="82" cy="36" r="21" fill="${c}"/>`;
+      break;
+
+    case "panda":
+      ears = `<circle cx="69" cy="20" r="10" fill="#252525"/>
+      <circle cx="94" cy="20" r="10" fill="#252525"/>`;
+      extra = `<ellipse cx="83" cy="57" rx="10" ry="12" fill="#252525"/>`;
+      break;
+
+    case "cat":
+      ears = `<path d="M65 31 L65 5 L84 22 L99 5 L99 36Z" fill="${c}"/>`;
+      tail = `<path d="M26 58 Q4 48 13 31" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`;
+      break;
+
+    case "penguin":
+      extra = `<ellipse cx="83" cy="49" rx="17" ry="22" fill="white"/>
+      <path d="M98 37 L113 43 L98 48Z" fill="#f5a52b"/>`;
+      break;
+
+    case "tiger":
+      extra = `<path d="M70 42 L77 51 L72 59 M92 42 L86 51 L93 58" stroke="#4a3020" stroke-width="5" fill="none"/>`;
+      break;
+
+    case "fox":
+      ears = `<path d="M65 32 L63 4 L82 24 L101 4 L100 34Z" fill="${c}"/>`;
+      tail = `<path d="M29 58 Q7 51 9 29 Q26 36 38 46Z" fill="${c}"/>`;
+      break;
+
+    case "monkey":
+      ears = `<circle cx="66" cy="36" r="13" fill="#98603d"/>
+      <circle cx="100" cy="36" r="13" fill="#98603d"/>`;
+      tail = `<path d="M27 57 Q7 53 10 32 Q13 21 21 30" fill="none" stroke="${c}" stroke-width="8"/>`;
+      break;
+
+    case "unicorn":
+      ears = `<path d="M77 24 L86 -2 L94 27Z" fill="#f4d35e"/>
+      <path d="M65 28 Q62 10 77 14 Q90 4 101 24" fill="#d98be9"/>`;
+      tail = `<path d="M27 57 Q8 46 13 29" stroke="#d98be9" stroke-width="10" fill="none"/>`;
+      break;
+  }
+
+  const body = `
+    <ellipse cx="47" cy="57" rx="29" ry="21" fill="${c}"/>
+    <ellipse cx="43" cy="48" rx="17" ry="10" fill="white" opacity=".18"/>
+    <path d="M29 68 L27 85 L42 87 L40 67Z" fill="${c}"/>
+    <path d="M54 68 L54 86 L68 86 L65 66Z" fill="${c}"/>
+    <ellipse cx="34" cy="89" rx="9" ry="4" fill="#51413b"/>
+    <ellipse cx="61" cy="89" rx="9" ry="4" fill="#51413b"/>
+    <ellipse cx="83" cy="38" rx="20" ry="19" fill="${c}"/>
+  `;
+
+  const face = `
+    <circle cx="91" cy="33" r="3.2" fill="#302820"/>
+    <circle cx="92" cy="32" r="1" fill="white"/>
+    <ellipse cx="101" cy="43" rx="7" ry="5" fill="${c}"/>
+    <circle cx="106" cy="42" r="2.5" fill="#49352f"/>
+    <circle cx="96" cy="48" r="4" fill="#f49ca5" opacity=".65"/>
+  `;
+
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 120 100"
+      width="100%" height="100%">
+      ${tail}
+      ${ears}
+      ${body}
+      ${extra}
+      ${face}
+    </svg>
+  `;
+}
+
 function applySkin() {
-  player.textContent = skins[selectedSkin].emoji;
+  player.innerHTML = animalSVG(skins[selectedSkin]);
 }
 
 // 상점 만들기
