@@ -859,3 +859,28 @@ button:hover {
   border-radius: 20px;
   background: #ffffffbb;
 }
+/* 랜덤 이벤트 */
+.game-event {
+  position: absolute;
+  font-size: 35px;
+  z-index: 5;
+  animation: eventFloat 0.7s infinite alternate;
+  filter: drop-shadow(0 0 8px gold);
+}
+
+/* 높은 장애물 */
+.tall-obstacle {
+  z-index: 3;
+  filter: drop-shadow(0 3px 3px #555);
+}
+
+/* 이벤트 반짝임 */
+@keyframes eventFloat {
+  from {
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    transform: translateY(-10px) scale(1.12);
+  }
+}
