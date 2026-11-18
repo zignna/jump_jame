@@ -12,6 +12,17 @@ const shop = document.getElementById("shop");
 
 const backgroundShop = document.getElementById("backgroundShop");
 
+// 랜덤 이벤트 시스템
+let eventTimer = 0;
+let shieldActive = false;
+
+
+// 더블 점프 시스템
+let doubleJumpUnlocked = false;
+let doubleJumpUsed = false;
+
+const DOUBLE_JUMP_SCORE = 50;
+
 // 배경 목록
 const backgrounds = [
   {
@@ -35,19 +46,19 @@ const backgrounds = [
   {
     name: "별빛 밤하늘",
     emoji: "🌙",
-    price: 150,
+    price: 100,
     className: "world-night"
   },
   {
     name: "바닷속",
     emoji: "🌊",
-    price: 200,
+    price: 100,
     className: "world-ocean"
   },
   {
     name: "요정 왕국",
     emoji: "🏰",
-    price: 300,
+    price: 100,
     className: "world-fairy"
   }
 ];
@@ -193,7 +204,7 @@ const skins = [
   { name: "사자", emoji: "🦁", price: 30, color: "#e6a64d", type: "lion" },
   { name: "판다", emoji: "🐼", price: 40, color: "#eeeeee", type: "panda" },
   { name: "고양이", emoji: "🐱", price: 40, color: "#f3a77b", type: "cat" },
-  { name: "펭귄", emoji: "🐧", price: 40, color: "#53677d", type: "penguin" },
+  { name: "강아지", emoji: "🐶", price: 40, color: "#d9a875", type: "dog" },
   { name: "호랑이", emoji: "🐯", price: 60, color: "#f39b35", type: "tiger" },
   { name: "여우", emoji: "🦊", price: 60, color: "#e98639", type: "fox" },
   { name: "원숭이", emoji: "🐵", price: 100, color: "#a96c43", type: "monkey" },
@@ -253,9 +264,23 @@ function animalSVG(skin) {
       break;
 
     case "lion":
-      ears = `<circle cx="82" cy="36" r="29" fill="#bd7937"/>
-      <circle cx="82" cy="36" r="21" fill="${c}"/>`;
-      break;
+      ears = `
+      <!-- 동글동글한 갈기 -->
+      <circle cx="83" cy="37" r="29" fill="#d18a38"/>
+
+      <!-- 귀 -->
+      <circle cx="65" cy="18" r="9" fill="#d18a38"/>
+      <circle cx="101" cy="18" r="9" fill="#d18a38"/>
+
+      <circle cx="65" cy="18" r="4" fill="#f5a8a8"/>
+      <circle cx="101" cy="18" r="4" fill="#f5a8a8"/>
+      `;
+
+      extra = `
+      <!-- 얼굴 -->
+     <circle cx="83" cy="38" r="20" fill="${c}"/>
+      `;
+    break;
 
     case "panda":
       ears = `<circle cx="69" cy="20" r="10" fill="#252525"/>
@@ -270,13 +295,33 @@ function animalSVG(skin) {
 
     
     
-    case "penguin":
-      extra = `
-       <ellipse cx="47" cy="57" rx="13" ry="16"
-         fill="white"/>
-      `;
-      break;
+    case "dog":
+     ears = `
+      <ellipse cx="66" cy="24" rx="9" ry="16"
+       fill="#c99059"
+       transform="rotate(-25 66 24)"/>
 
+      <ellipse cx="100" cy="24" rx="9" ry="16"
+       fill="#c99059"
+        transform="rotate(25 100 24)"/>
+
+       <ellipse cx="66" cy="24" rx="4" ry="10"
+        fill="#e9a9a0"/>
+
+      <ellipse cx="100" cy="24" rx="4" ry="10"
+      fill="#e9a9a0"/>
+      `;
+
+    tail = `
+      <circle cx="13" cy="57" r="9"
+       fill="${c}"/>
+      `;
+
+    extra = `
+      <ellipse cx="83" cy="43" rx="12" ry="9"
+        fill="#f5dfc5"/>
+      `;
+    break;
 
 
     case "tiger":
@@ -314,7 +359,43 @@ function animalSVG(skin) {
   
 let face = "";
 
-if (type === "monkey") {
+if (type === "dog") {
+  face = `
+    <circle cx="76" cy="35" r="3.2"
+      fill="#302820"/>
+
+    <circle cx="91" cy="35" r="3.2"
+      fill="#302820"/>
+
+    <circle cx="77" cy="34" r="1"
+      fill="white"/>
+
+    <circle cx="92" cy="34" r="1"
+      fill="white"/>
+
+    <ellipse cx="83" cy="44" rx="9" ry="6"
+      fill="#fff0dc"/>
+
+    <circle cx="83" cy="41" r="2.5"
+      fill="#49352f"/>
+
+    <path d="M83 44 Q79 49 76 46"
+      stroke="#754b3b"
+      stroke-width="1.5"
+      fill="none"/>
+
+    <path d="M83 44 Q87 49 90 46"
+      stroke="#754b3b"
+      stroke-width="1.5"
+      fill="none"/>
+
+    <circle cx="70" cy="44" r="4"
+      fill="#f49ca5" opacity=".7"/>
+
+    <circle cx="97" cy="44" r="4"
+      fill="#f49ca5" opacity=".7"/>
+  `;
+} else if (type === "monkey") {
   // 귀여운 원숭이 얼굴
   face = `
     <ellipse cx="83" cy="40" rx="17" ry="15"
@@ -536,6 +617,12 @@ function startGame() {
   lastTime = performance.now();
 
   animationId = requestAnimationFrame(update);
+  doubleJumpUsed = false;
+  doubleJumpUnlocked = false;
+
+  shieldActive = false;
+  slowTime = 0;
+  eventTimer = 0;
 }
 
 // 점프
@@ -546,32 +633,62 @@ function jump() {
     return;
   }
 
+  // 첫 번째 점프
   if (!jumping) {
     jumping = true;
     velocity = jumpPower;
 
     player.classList.add("is-jumping");
+    return;
+  }
+
+  // 두 번째 점프
+  if (doubleJumpUnlocked && !doubleJumpUsed) {
+    velocity = jumpPower * 1.05;
+    doubleJumpUsed = true;
+
+    // 점프 효과
+    player.classList.remove("is-jumping");
+
+    void player.offsetWidth;
+
+    player.classList.add("is-jumping");
   }
 }
-
 
 // 장애물 생성
 function createObstacle() {
   const types = [
-    { emoji: "🌵", width: 45 },
-    { emoji: "🪨", width: 45 },
-    { emoji: "🍄", width: 45 },
-    { emoji: "🌳", width: 48 },
-    { emoji: "🌵", width: 45 }
+    { emoji: "🌵", width: 45, tall: false },
+    { emoji: "🪨", width: 45, tall: false },
+    { emoji: "🍄", width: 45, tall: false },
+    { emoji: "🌳", width: 48, tall: false }
   ];
+
+  // 30점부터 높은 장애물 등장
+  if (score >= DOUBLE_JUMP_SCORE) {
+    types.push(
+      { emoji: "🌲", width: 75, tall: true },
+      { emoji: "🏰", width: 85, tall: true }
+    );
+  }
 
   const type = types[
     Math.floor(Math.random() * types.length)
   ];
 
   const element = document.createElement("div");
-  element.className = "obstacle";
+
+  element.className = type.tall
+    ? "obstacle tall-obstacle"
+    : "obstacle";
+
   element.textContent = type.emoji;
+
+  if (type.tall) {
+    element.style.fontSize = "76px";
+    element.style.lineHeight = "90px";
+  }
 
   element.style.left = game.clientWidth + "px";
 
@@ -581,8 +698,80 @@ function createObstacle() {
     type: "obstacle",
     element,
     x: game.clientWidth,
-    width: type.width
+    width: type.width,
+    tall: type.tall
   });
+}
+
+// 랜덤 이벤트 생성
+function createEvent() {
+  const events = [
+    {
+      type: "bonus",
+      emoji: "⭐",
+      name: "코인 보너스!"
+    },
+    {
+      type: "shield",
+      emoji: "🛡️",
+      name: "보호막 획득!"
+    }
+
+  ];
+
+  const event = events[
+    Math.floor(Math.random() * events.length)
+  ];
+
+  const element = document.createElement("div");
+
+  element.className = "game-event";
+  element.textContent = event.emoji;
+
+  element.style.left = game.clientWidth + "px";
+  element.style.bottom = (80 + Math.random() * 80) + "px";
+
+  objects.appendChild(element);
+
+  entities.push({
+    type: "event",
+    eventType: event.type,
+    element,
+    x: game.clientWidth,
+    width: 40
+  });
+}
+
+
+// 이벤트 획득
+function collectEvent(entity) {
+
+  switch (entity.eventType) {
+
+    case "bonus":
+      coins += 5;
+      coinsText.textContent = coins;
+      localStorage.setItem("jumpCoins", coins);
+
+      message.textContent = "⭐ 코인 5개 획득!";
+      break;
+
+    case "shield":
+      shieldActive = true;
+      message.textContent = "🛡️ 보호막 획득!";
+      break;
+  }
+
+  // 2초 후 메시지 삭제
+  setTimeout(() => {
+    if (!gameOver) {
+      message.textContent = "";
+    }
+  }, 2000);
+
+  entity.element.remove();
+
+  entities = entities.filter(item => item !== entity);
 }
 
 // 구덩이 생성
@@ -674,6 +863,21 @@ function checkCollision() {
   // 코인은 장애물이 아니므로 충돌로 게임을 멈추지 않음
     continue;
   }
+    // 랜덤 이벤트 충돌
+    if (entity.type === "event") {
+      const hit =
+        playerBox.right > o.left &&
+       playerBox.left < o.right &&
+        playerBox.bottom > o.top &&
+       playerBox.top < o.bottom;
+
+      if (hit) {
+       collectEvent(entity);
+      }
+
+      continue;
+    }
+
     
     if (entity.type === "pit") {
       const overlaps =
@@ -682,10 +886,24 @@ function checkCollision() {
 
   // 구덩이에 실제로 걸쳐 있고
   // 캐릭터가 땅에 착지했을 때 게임 오버
-      if (overlaps && playerY <= 2 && !jumping) {
-        endGame();
-        return;
-     }
+     if (overlaps && playerY <= 2 && !jumping) {
+
+      if (shieldActive) {
+        shieldActive = false;
+
+        entity.element.remove();
+
+        entities = entities.filter(
+         item => item !== entity
+        );
+
+       message.textContent = "🛡️ 보호막이 구해줬어요!";
+        continue;
+      }
+
+      endGame();
+      return;
+    }
 
       continue;
     }
@@ -698,10 +916,27 @@ function checkCollision() {
       playerBox.bottom > o.top + 8 &&
       playerBox.top < o.bottom - 5;
 
+   
     if (collision) {
-      endGame();
-      return;
+
+  // 보호막이 있다면 한 번 방어
+      if (shieldActive) {
+      shieldActive = false;
+
+      entity.element.remove();
+
+      entities = entities.filter(
+       item => item !== entity
+      );
+
+     message.textContent = "🛡️ 보호막이 공격을 막았어요!";
+
+      continue;
     }
+
+    endGame();
+    return;
+  }
   }
 }
 
@@ -712,6 +947,9 @@ function update(time) {
 
   const dt = Math.min((time - lastTime) / 16.67, 2);
   lastTime = time;
+  if (slowTime > 0) {
+    slowTime = Math.max(0, slowTime - dt / 60);
+  }
 
   // 점프 물리
   if (jumping) {
@@ -722,6 +960,7 @@ function update(time) {
       playerY = 0;
       velocity = 0;
       jumping = false;
+      doubleJumpUsed = false;
       player.classList.remove("is-jumping");
     }
   }
@@ -732,6 +971,13 @@ function update(time) {
   // 장애물 생성
   spawnTimer += dt;
   coinTimer += dt;
+  eventTimer += dt;
+
+  // 약 10~15초마다 랜덤 이벤트 등장
+  if (eventTimer >= 600 + Math.random() * 300) {
+  eventTimer = 0;
+  createEvent();
+  } 
 
   const spawnInterval = Math.max(65, 105 - score * 1.5);
 
@@ -751,33 +997,49 @@ function update(time) {
     createCoin();
   }
 
-  // 오브젝트 이동
-  for (const entity of [...entities]) {
-    entity.x -= speed * dt;
-    entity.element.style.left = entity.x + "px";
+// 시간 느려짐 이벤트 시간 감소
 
-    if (entity.x + entity.width < 0 && entity.type !== "coin") {
-      if (entity.type === "obstacle") {
-        score++;
-        scoreText.textContent = score;
-        
 
-        if (score % 3 === 0) {
-          coins++;
-          coinsText.textContent = coins;
-          localStorage.setItem("jumpCoins", coins);
-        }
+// 오브젝트 이동 속도 결정
+
+
+// 오브젝트 이동
+for (const entity of [...entities]) {
+
+  entity.x -= speed * dt;
+  entity.element.style.left = entity.x + "px";
+
+  // 오브젝트 화면 밖으로 나갔을 때
+  if (entity.x + entity.width < 0 && entity.type !== "coin") {
+
+    if (entity.type === "obstacle") {
+      score++;
+      scoreText.textContent = score;
+
+      // 30점 달성 시 더블 점프 해금
+      if (score >= DOUBLE_JUMP_SCORE && !doubleJumpUnlocked) {
+        doubleJumpUnlocked = true;
+        message.textContent = "🐰 더블 점프 해금!";
       }
 
-      entity.element.remove();
-      entities = entities.filter(item => item !== entity);
+      // 3점마다 코인 지급
+      if (score % 3 === 0) {
+        coins++;
+        coinsText.textContent = coins;
+        localStorage.setItem("jumpCoins", coins);
+      }
     }
 
-    if (entity.type === "coin" && entity.x < -40) {
-      entity.element.remove();
-      entities = entities.filter(item => item !== entity);
-    }
+    entity.element.remove();
+    entities = entities.filter(item => item !== entity);
   }
+
+  // 코인 화면 밖으로 나갔을 때
+  if (entity.type === "coin" && entity.x < -40) {
+    entity.element.remove();
+    entities = entities.filter(item => item !== entity);
+  }
+}
 
   speed = Math.min(5 + score * 0.12, 11);
 
